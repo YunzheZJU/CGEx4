@@ -3,7 +3,7 @@
 //注意FPS函数的应用
 
 #include <stdlib.h>
-#include "glut.h"
+#include "gl/glut.h"
 #include <stdio.h>
 #include <string.h>
 
