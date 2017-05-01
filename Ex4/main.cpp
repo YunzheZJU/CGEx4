@@ -6,10 +6,10 @@
 #include "gl/glut.h"
 #include <stdio.h>
 #include <string.h>
-#include <iostream>
+//#include <iostream>
 #include "stanford_bunny.h"
 
-using namespace std;
+//using namespace std;
 
 float eye[] = { 0, 6, 9 };
 float center[] = { 0, 0, 0 };
@@ -40,39 +40,6 @@ void DrawDesktop(GLfloat y, GLfloat width) {
 	DrawCube(0, y, 0, width, 0.5, width);
 }
 
-void DrawTable()
-{
-	glPushMatrix();
-	glTranslatef(0, 3.5, 0);
-	glScalef(5, 1, 4);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.5, 1.5, 1);
-	glScalef(1, 3, 1);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.5, 1.5, 1);
-	glScalef(1, 3, 1);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.5, 1.5, -1);
-	glScalef(1, 3, 1);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.5, 1.5, -1);
-	glScalef(1, 3, 1);
-	glutSolidCube(1.0);
-	glPopMatrix();
-}
-
 void DrawTable(GLfloat height, GLfloat width) {
 	GLfloat legheight = height;
 	GLfloat legwidth = 0.5;
@@ -85,8 +52,8 @@ void DrawTable(GLfloat height, GLfloat width) {
 }
 
 void DrawBunny(GLint index) {
-	GLint row = (int)index / 4.0; cout << "row: " << row << endl;
-	GLint column = index % 4; cout << "column: " << column << endl;
+	GLint row = (int)index / 4.0;
+	GLint column = index % 4;
 
 	glPushMatrix();
 	glTranslatef(3 - column * 2, 4.5, 3 - row * 2);
@@ -99,14 +66,11 @@ GLint GenTableList()
 {
 	GLint lid = glGenLists(1);
 	glNewList(lid, GL_COMPILE);
+	for (GLint index = 0; index < bunnynum; index++) {
+		DrawBunny(index);
+	}
 
 	DrawTable(6, 6);
-	// 画兔子
-	GLint index;
-	for (index = 0; index < bunnynum; index++) {
-		DrawBunny(index);
-		cout << "DrawBunny(" << index << ")" << endl;
-	}
 	glEndList();
 	return lid;
 }
@@ -118,23 +82,21 @@ void Draw_Table_List()
 
 void DrawScene()
 {
-	glPushMatrix();
-	glTranslatef(1.5, 4.5, 0);
-	glScalef(2, 2, 2);
-	DrawBunny();
-	glPopMatrix();
+	for (GLint index = 0; index < bunnynum; index++) {
+		DrawBunny(index);
+	}
 
 	DrawTable(6, 6);
 }
 
 void reshape(int width, int height)
 {
-	if (height == 0)										// Prevent A Divide By Zero By
+	if (height == 0)									// Prevent A Divide By Zero By
 	{
 		height = 1;										// Making Height Equal One
 	}
 
-	glViewport(0, 0, width, height);						// Reset The Current Viewport
+	glViewport(0, 0, width, height);					// Reset The Current Viewport
 
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
@@ -155,13 +117,15 @@ void key(unsigned char k, int x, int y)
 	switch (k)
 	{
 	case 27:
-	case 'q': {exit(0); break; }
+	case 'q': {
+		exit(0);
+		break;
+	}
 	case 'i': {
 		// 兔子数-1
 		if (bunnynum > 1) {
 			bunnynum--;
 			tableList = GenTableList();
-			cout << "i pressed" << endl;
 		}
 		break;
 	}
@@ -170,7 +134,6 @@ void key(unsigned char k, int x, int y)
 		if (bunnynum < 16) {
 			bunnynum++;
 			tableList = GenTableList();
-			cout << "k pressed" << endl;
 		}
 		break;
 	}
@@ -244,21 +207,22 @@ void getFPS()
 
 	char *c;
 	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);  // 选择投影矩阵
-	glPushMatrix();               // 保存原矩阵
-	glLoadIdentity();             // 装入单位矩阵
-	glOrtho(0, 480, 0, 480, -1, 1);    // 位置正投影
-	glMatrixMode(GL_MODELVIEW);   // 选择Modelview矩阵
-	glPushMatrix();               // 保存原矩阵
-	glLoadIdentity();             // 装入单位矩阵
+	glMatrixMode(GL_PROJECTION);	// 选择投影矩阵
+	glPushMatrix();					// 保存原矩阵
+	glLoadIdentity();				// 装入单位矩阵
+	glOrtho(0, 480, 0, 480, -1, 1);	// 位置正投影
+	glMatrixMode(GL_MODELVIEW);		// 选择Modelview矩阵
+	glPushMatrix();					// 保存原矩阵
+	glLoadIdentity();				// 装入单位矩阵
 	glRasterPos2f(10, 10);
 	for (c = buffer; *c != '\0'; c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
-	glMatrixMode(GL_PROJECTION);  // 选择投影矩阵
-	glPopMatrix();                // 重置为原保存矩阵
-	glMatrixMode(GL_MODELVIEW);   // 选择Modelview矩阵
-	glPopMatrix();                // 重置为原保存矩阵
+	// 逆序切换MatrixMode，Why?
+	glMatrixMode(GL_PROJECTION);	// 选择投影矩阵
+	glPopMatrix();					// 重置为原保存矩阵
+	glMatrixMode(GL_MODELVIEW);		// 选择Modelview矩阵
+	glPopMatrix();					// 重置为原保存矩阵
 	glEnable(GL_DEPTH_TEST);
 }
 
