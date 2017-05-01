@@ -56,9 +56,10 @@ void DrawBunny(GLint index) {
 	GLint column = index % 4;
 
 	glPushMatrix();
-	glTranslatef(3 - column * 2, 4.5, 3 - row * 2);
+	glTranslatef(3 - column * 2, 4, 3 - row * 2);
 	glScalef(2, 2, 2);
 	DrawBunny();
+	//glutSolidCube(1);
 	glPopMatrix();
 }
 
@@ -163,12 +164,16 @@ void key(unsigned char k, int x, int y)
 	}
 	case 'z':
 	{
-		eye[2] *= 0.95;
+		//eye[2] *= 0.95;
+		eye[2] -= 0.2;
+		center[2] -= 0.2;
 		break;
 	}
 	case 'c':
 	{
-		eye[2] *= 1.05;
+		//eye[2] *= 1.05;
+		eye[2] += 0.2;
+		center[2] += 0.2;
 		break;
 	}
 	case 'l':
@@ -247,7 +252,7 @@ void redraw()
 
 	if (bAnim)
 		fRotate += 0.5f;
-	glRotatef(fRotate, 0, 1.0f, 0);			// Rotate around Y axis
+	glRotatef(fRotate, 0, 0, 1.0f);			// Rotate around Y axis
 
 	glScalef(0.4, 0.4, 0.4);
 	if (!bDrawList)
