@@ -20,6 +20,7 @@ bool bAnim = false;
 bool bDrawList = false;
 GLint tableList = 0;
 GLint bunnynum = 1;
+GLint bunnyscale = 1;
 
 void DrawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat xlength, GLfloat ylength, GLfloat zlength) {
 	glPushMatrix();
@@ -56,8 +57,8 @@ void DrawBunny(GLint index) {
 	GLint column = index % 4;
 
 	glPushMatrix();
-	glTranslatef(3 - column * 2, 4, 3 - row * 2);
-	glScalef(2, 2, 2);
+	glTranslatef(3 - column * 2, 3.75 + bunnyscale * 0.25, 3 - row * 2);
+	glScalef(1 + bunnyscale, 1 + bunnyscale, 1 + bunnyscale);
 	DrawBunny();
 	//glutSolidCube(1);
 	glPopMatrix();
@@ -135,6 +136,23 @@ void key(unsigned char k, int x, int y)
 		if (bunnynum < 16) {
 			bunnynum++;
 			tableList = GenTableList();
+		}
+		break;
+	}
+	case 'j': {
+		// ÍÃ×Ó±äÐ¡
+		switch (bunnyscale) {
+		case 1: {
+			bunnyscale = 3;
+			tableList = GenTableList();
+			break;
+		}
+		case 2:
+		case 3: {
+			bunnyscale -= 1;
+			tableList = GenTableList();
+			break;
+		}
 		}
 		break;
 	}
@@ -252,7 +270,7 @@ void redraw()
 
 	if (bAnim)
 		fRotate += 0.5f;
-	glRotatef(fRotate, 0, 0, 1.0f);			// Rotate around Y axis
+	glRotatef(fRotate, 0, 1.0f, 0);			// Rotate around Y axis
 
 	glScalef(0.4, 0.4, 0.4);
 	if (!bDrawList)
