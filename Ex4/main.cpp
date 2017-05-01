@@ -9,7 +9,7 @@
 
 #include "stanford_bunny.h"
 
-float eye[] = { 0, 4, 6 };
+float eye[] = { 0, 6, 9 };
 float center[] = { 0, 0, 0 };
 float fDistance = 0.2f;
 float fRotate = 0;
@@ -17,6 +17,26 @@ bool bAnim = false;
 
 bool bDrawList = false;
 GLint tableList = 0;
+GLint bunnynum = 1;
+
+void DrawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat xlength, GLfloat ylength, GLfloat zlength) {
+	glPushMatrix();
+	glTranslatef(x, y, z);
+	glScalef(xlength, ylength, zlength);
+	glutSolidCube(1);
+	glPopMatrix();
+}
+
+void DrawLegs(GLfloat location, GLfloat width, GLfloat height) {
+	DrawCube(location, 0, location, width, height, width);
+	DrawCube(location, 0, -location, width, height, width);
+	DrawCube(-location, 0, location, width, height, width);
+	DrawCube(-location, 0, -location, width, height, width);
+}
+
+void DrawDesktop(GLfloat y, GLfloat width) {
+	DrawCube(0, y, 0, width, 0.5, width);
+}
 
 void DrawTable()
 {
@@ -51,6 +71,17 @@ void DrawTable()
 	glPopMatrix();
 }
 
+void DrawTableNew(GLfloat height, GLfloat width) {
+	GLfloat legheight = height;
+	GLfloat legwidth = 0.5;
+	GLfloat leglocation = width / 2.0;
+	GLfloat desktopwidth = width * 1.4;
+	GLfloat desktopy = height / 2.0 + 0.25;
+
+	DrawDesktop(desktopy, desktopwidth);
+	DrawLegs(leglocation, legwidth, legheight);
+}
+
 GLint GenTableList()
 {
 	GLint lid = glGenLists(1);
@@ -76,7 +107,8 @@ void DrawScene()
 	DrawBunny();
 	glPopMatrix();
 
-	DrawTable();
+	//DrawTable();
+	DrawTableNew(6, 6);
 }
 
 void reshape(int width, int height)
@@ -110,12 +142,18 @@ void key(unsigned char k, int x, int y)
 	case 'q': {exit(0); break; }
 	case 'i': {
 		// 兔子数-1
-
+		if (bunnynum > 1) {
+			bunnynum--;
+			tableList = GenTableList();
+		}
 		break;
 	}
 	case 'k': {
 		// 兔子数+1
-
+		if (bunnynum < 16) {
+			bunnynum++;
+			tableList = GenTableList();
+		}
 		break;
 	}
 	case 'a':
@@ -214,16 +252,16 @@ void redraw()
 
 	gluLookAt(eye[0], eye[1], eye[2],
 		center[0], center[1], center[2],
-		0, 1, 0);				// 场景（0，0，0）的视点中心 (0, 4, 6)，Y轴向上
+		0, 1, 0);				// 从（0, 4, 6）看向（0, 0, 0），头顶朝上。持续接近变为从上方观察，持续远离变为平行观察。
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	GLfloat gray[] = { 0.4, 0.4, 0.4, 1.0 };
 	GLfloat light_pos[] = { 10, 10, 10, 1 };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, gray);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, gray);
-	glEnable(GL_LIGHT0);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, gray);	// 设置环境光为灰色
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);	// 应用灯光位置
+	glLightfv(GL_LIGHT0, GL_AMBIENT, gray);			// 应用环境光
+	glEnable(GL_LIGHT0);							// 启用灯光（编号0？）
 
 	if (bAnim)
 		fRotate += 0.5f;
