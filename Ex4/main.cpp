@@ -6,8 +6,10 @@
 #include "gl/glut.h"
 #include <stdio.h>
 #include <string.h>
-
+#include <iostream>
 #include "stanford_bunny.h"
+
+using namespace std;
 
 float eye[] = { 0, 6, 9 };
 float center[] = { 0, 0, 0 };
@@ -71,7 +73,7 @@ void DrawTable()
 	glPopMatrix();
 }
 
-void DrawTableNew(GLfloat height, GLfloat width) {
+void DrawTable(GLfloat height, GLfloat width) {
 	GLfloat legheight = height;
 	GLfloat legwidth = 0.5;
 	GLfloat leglocation = width / 2.0;
@@ -82,14 +84,29 @@ void DrawTableNew(GLfloat height, GLfloat width) {
 	DrawLegs(leglocation, legwidth, legheight);
 }
 
+void DrawBunny(GLint index) {
+	GLint row = (int)index / 4.0; cout << "row: " << row << endl;
+	GLint column = index % 4; cout << "column: " << column << endl;
+
+	glPushMatrix();
+	glTranslatef(3 - column * 2, 4.5, 3 - row * 2);
+	glScalef(2, 2, 2);
+	DrawBunny();
+	glPopMatrix();
+}
+
 GLint GenTableList()
 {
 	GLint lid = glGenLists(1);
 	glNewList(lid, GL_COMPILE);
 
-	DrawTable();
+	DrawTable(6, 6);
 	// »­ÍÃ×Ó
-
+	GLint index;
+	for (index = 0; index < bunnynum; index++) {
+		DrawBunny(index);
+		cout << "DrawBunny(" << index << ")" << endl;
+	}
 	glEndList();
 	return lid;
 }
@@ -107,8 +124,7 @@ void DrawScene()
 	DrawBunny();
 	glPopMatrix();
 
-	//DrawTable();
-	DrawTableNew(6, 6);
+	DrawTable(6, 6);
 }
 
 void reshape(int width, int height)
@@ -145,6 +161,7 @@ void key(unsigned char k, int x, int y)
 		if (bunnynum > 1) {
 			bunnynum--;
 			tableList = GenTableList();
+			cout << "i pressed" << endl;
 		}
 		break;
 	}
@@ -153,6 +170,7 @@ void key(unsigned char k, int x, int y)
 		if (bunnynum < 16) {
 			bunnynum++;
 			tableList = GenTableList();
+			cout << "k pressed" << endl;
 		}
 		break;
 	}
