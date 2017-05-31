@@ -67,6 +67,7 @@ void DrawBunny(GLint index) {
 GLint GenTableList()
 {
 	GLint lid = glGenLists(1);
+
 	glNewList(lid, GL_COMPILE);
 	for (GLint index = 0; index < bunnynum; index++) {
 		DrawBunny(index);
@@ -231,21 +232,27 @@ void getFPS()
 	char *c;
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);	// 选择投影矩阵
-	glPushMatrix();					// 保存原矩阵
+	glPushMatrix();					// 保存原矩阵（投影矩阵）
 	glLoadIdentity();				// 装入单位矩阵
 	glOrtho(0, 480, 0, 480, -1, 1);	// 位置正投影
 	glMatrixMode(GL_MODELVIEW);		// 选择Modelview矩阵
-	glPushMatrix();					// 保存原矩阵
+	glPushMatrix();					// 保存原矩阵（Modelview矩阵）
 	glLoadIdentity();				// 装入单位矩阵
 	glRasterPos2f(10, 10);
 	for (c = buffer; *c != '\0'; c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
-	// 逆序切换MatrixMode，Why?
+	glPopMatrix();					// 重置为原保存矩阵（Modelview矩阵）
 	glMatrixMode(GL_PROJECTION);	// 选择投影矩阵
-	glPopMatrix();					// 重置为原保存矩阵
+	glPopMatrix();					// 重置为原保存矩阵（投影矩阵）
 	glMatrixMode(GL_MODELVIEW);		// 选择Modelview矩阵
-	glPopMatrix();					// 重置为原保存矩阵
+
+	// 以下为等价方法
+	//glMatrixMode(GL_PROJECTION);	// 选择投影矩阵
+	//glPopMatrix();				// 重置为原保存矩阵（投影矩阵）
+	//glMatrixMode(GL_MODELVIEW);	// 选择Modelview矩阵
+	//glPopMatrix();				// 重置为原保存矩阵（Modelview矩阵）
+
 	glEnable(GL_DEPTH_TEST);
 }
 
